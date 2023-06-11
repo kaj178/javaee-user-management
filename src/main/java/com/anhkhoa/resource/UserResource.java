@@ -2,6 +2,7 @@ package com.anhkhoa.resource;
 
 import com.anhkhoa.database.MysqlConnection;
 import com.anhkhoa.model.User;
+import com.anhkhoa.repository.DataRepository;
 import com.anhkhoa.repository.UserRepository;
 import com.google.gson.Gson;
 
@@ -51,8 +52,9 @@ public class UserResource {
 	@GET
 	@Path("/v1")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Entity<List<User>> readUsers() {
+	public String readUsers() {
 		List<User> userList = new ArrayList<>();
+		List<String> errorList = new ArrayList<>();
 		try {
 			Connection connection = new MysqlConnection().getConnection();
 			String queryString = "SELECT * FROM `public-api`.user;";
@@ -68,20 +70,23 @@ public class UserResource {
 				userList.add(new User(id, name, gender, status));
 			}
 		} catch (Exception e) {
-			System.out.println("Error: Read data fail! - " + e.getMessage());
-			e.printStackTrace();
+			errorList.add("Error: Read data fail! - " + e.getMessage());
+			DataRepository<String> errorRepo = new DataRepository<>(500, errorList);
+			return gson.toJson(errorRepo);
 		}
-		Entity<List<User>> entity = Entity.json(userList);
+		// Entity<List<User>> entity = Entity.json(userList);
 		// System.out.println(entity);
 		// return entity.getEntity();\
-		return entity; 
+		DataRepository<User> dataRepo = new DataRepository<>(200, userList);
+		return gson.toJson(dataRepo); 
 	}
 	
 	@GET
 	@Path("/v1/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public User readUser(@PathParam("id") int id) {
-		User user = null;
+	public String readUser(@PathParam("id") int id) {
+		List<User> userList = new ArrayList<>();
+		List<String> errorList = new ArrayList<>();
 		try {
 			Connection connection = new MysqlConnection().getConnection();
 			String queryString = "SELECT * FROM `public-api`.user WHERE user.id = ?;";
@@ -89,31 +94,33 @@ public class UserResource {
 			pst.setInt(1, id);
 			ResultSet result = pst.executeQuery();
 			
-			
 			while (result.next()) {
 				int userId = result.getInt("id");
 				String name = result.getString("name");
 				String gender = result.getString("gender");
 				String status = result.getString("status");
-				user = new User(userId, name, gender, status);
+				userList.add(new User(userId, name, gender, status));
 			}
 		} catch (Exception e) {
-			System.out.println("Error: Read data fail!" + e.getMessage());
+			errorList.add("Error: Read data fail! - " + e.getMessage());
+			DataRepository<String> errorRepo = new DataRepository<>(500, errorList);
+			return gson.toJson(errorRepo);
 		}
-		return user;
+		DataRepository<User> dataRepo = new DataRepository<>(200, userList);
+ 		return gson.toJson(dataRepo);
 	}
 
 	@POST
+	@Path("/v1")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public User createUser(User user) {
-//		Client client = ClientBuilder.newClient();
-//		WebTarget target = client.target("http://localhost:8080/demorest/webapi/users");
-//
-//		Response response = target.request(MediaType.APPLICATION_JSON)
-//								.post(Entity.json(user));
-//		User createdUser = response.readEntity(User.class);
-//		return Response.ok(createdUser, MediaType.APPLICATION_JSON).build();
+		try {
+			
+		} catch (Exception e) {
+			System.out.println("Error: Create user fail!" + e.getMessage());
+			e.printStackTrace();
+		}
 		return userRepo.add(user);
 	}
 }
