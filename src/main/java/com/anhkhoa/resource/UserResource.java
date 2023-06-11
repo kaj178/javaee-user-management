@@ -76,6 +76,32 @@ public class UserResource {
 		// return entity.getEntity();\
 		return entity; 
 	}
+	
+	@GET
+	@Path("/v1/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public User readUser(@PathParam("id") int id) {
+		User user = null;
+		try {
+			Connection connection = new MysqlConnection().getConnection();
+			String queryString = "SELECT * FROM `public-api`.user WHERE user.id = ?;";
+			PreparedStatement pst = connection.prepareStatement(queryString);
+			pst.setInt(1, id);
+			ResultSet result = pst.executeQuery();
+			
+			
+			while (result.next()) {
+				int userId = result.getInt("id");
+				String name = result.getString("name");
+				String gender = result.getString("gender");
+				String status = result.getString("status");
+				user = new User(userId, name, gender, status);
+			}
+		} catch (Exception e) {
+			System.out.println("Error: Read data fail!" + e.getMessage());
+		}
+		return user;
+	}
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
