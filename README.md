@@ -12,5 +12,5 @@
   + Open Eclipse and import project to Project Manager
   + Add project to your server runtime such as Tomcat...
   + Start server
-  + Access to http://localhost:8080/<project-name>/webapi/users/v0 to get data from project's repository
-  + Access to http://localhost:8080/<project-name>/webapi/users/v1 to get data from database
+  + Access to http://localhost:8080/project-name/webapi/users/v0 to get data from project's repository
+  + Access to http://localhost:8080/project-name/webapi/users/v1 to get data from database
