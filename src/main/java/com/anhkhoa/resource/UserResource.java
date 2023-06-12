@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -71,7 +72,7 @@ public class UserResource {
 			}
 		} catch (Exception e) {
 			errorList.add("Error: Read data fail! - " + e.getMessage());
-			DataRepository<String> errorRepo = new DataRepository<>(500, errorList);
+			DataRepository<String> errorRepo = new DataRepository<>(404, errorList);
 			return gson.toJson(errorRepo);
 		}
 		// Entity<List<User>> entity = Entity.json(userList);
@@ -103,24 +104,49 @@ public class UserResource {
 			}
 		} catch (Exception e) {
 			errorList.add("Error: Read data fail! - " + e.getMessage());
-			DataRepository<String> errorRepo = new DataRepository<>(500, errorList);
+			DataRepository<String> errorRepo = new DataRepository<>(404, errorList);
 			return gson.toJson(errorRepo);
 		}
 		DataRepository<User> dataRepo = new DataRepository<>(200, userList);
  		return gson.toJson(dataRepo);
+	}
+	
+	// Check if a user's name has existed
+	private static Boolean checkUserExist(Connection conn, String name) throws SQLException {
+		String queryString = "SELECT * FROM `public-api`.user WHERE name = ?;";
+		PreparedStatement pst = conn.prepareStatement(queryString);
+		pst.setString(1, name);
+
+		ResultSet results = pst.executeQuery();
+		if (results.next()) {
+			return true;
+		}
+		return false;
 	}
 
 	@POST
 	@Path("/v1")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public User createUser(User user) {
+	public String createUser(User user) {
+		List<String> responseList = new ArrayList<>();
 		try {
-			
+			Connection connection = new MysqlConnection().getConnection();
+			if (!checkUserExist(connection, user.getName())) {
+				String queryString = "INSERT INTO `public-api`.user(name, gender, status) VALUES (?, ?, ?);";
+				PreparedStatement pst = connection.prepareStatement(queryString);
+				pst.setString(1, user.getName());
+				pst.setString(2, user.getGender());
+				pst.setString(3, user.getStatus());
+				int row = pst.executeUpdate();
+				responseList.add((row > 0) ? "Create user successfully!" : "Failed to create user!");
+			} else {
+				responseList.add("User existed!");
+			}
 		} catch (Exception e) {
-			System.out.println("Error: Create user fail!" + e.getMessage());
-			e.printStackTrace();
+			responseList.add("Error: Failed to create user! - " + e.getMessage());
+			return gson.toJson(new DataRepository<>(400, responseList));
 		}
-		return userRepo.add(user);
+		return gson.toJson(new DataRepository<>(200, responseList));
 	}
 }
