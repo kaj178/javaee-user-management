@@ -5,6 +5,7 @@ import com.anhkhoa.model.User;
 import com.anhkhoa.repository.DataRepository;
 import com.anhkhoa.repository.UserRepository;
 import com.google.gson.Gson;
+import com.mysql.cj.x.protobuf.MysqlxPrepare.Prepare;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -14,13 +15,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @Path("/users")
 public class UserResource {
@@ -88,8 +92,7 @@ public class UserResource {
 	public String readUser(@PathParam("id") int id) {
 		List<User> userList = new ArrayList<>();
 		List<String> errorList = new ArrayList<>();
-		try {
-			Connection connection = new MysqlConnection().getConnection();
+		try (Connection connection = new MysqlConnection().getConnection()) {
 			String queryString = "SELECT * FROM `public-api`.user WHERE user.id = ?;";
 			PreparedStatement pst = connection.prepareStatement(queryString);
 			pst.setInt(1, id);
@@ -107,16 +110,27 @@ public class UserResource {
 			DataRepository<String> errorRepo = new DataRepository<>(404, errorList);
 			return gson.toJson(errorRepo);
 		}
-		DataRepository<User> dataRepo = new DataRepository<>(200, userList);
+		DataRepository<User> dataRepo = new DataRepository<>(201, userList);
  		return gson.toJson(dataRepo);
 	}
 	
-	// Check if a user's name has existed
+	// Check if a user's name has existed by name
 	private static Boolean checkUserExist(Connection conn, String name) throws SQLException {
 		String queryString = "SELECT * FROM `public-api`.user WHERE name = ?;";
 		PreparedStatement pst = conn.prepareStatement(queryString);
 		pst.setString(1, name);
-
+		ResultSet results = pst.executeQuery();
+		if (results.next()) {
+			return true;
+		}
+		return false;
+	}
+	
+	// Check if a user's name has existed by id
+	private static Boolean checkUserExist(Connection conn, Integer id) throws SQLException {
+		String queryString = "SELECT * FROM `public-api`.user WHERE id = ?;";
+		PreparedStatement pst = conn.prepareStatement(queryString);
+		pst.setInt(1, id);
 		ResultSet results = pst.executeQuery();
 		if (results.next()) {
 			return true;
@@ -130,8 +144,7 @@ public class UserResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public String createUser(User user) {
 		List<String> responseList = new ArrayList<>();
-		try {
-			Connection connection = new MysqlConnection().getConnection();
+		try (Connection connection = new MysqlConnection().getConnection()) {
 			if (!checkUserExist(connection, user.getName())) {
 				String queryString = "INSERT INTO `public-api`.user(name, gender, status) VALUES (?, ?, ?);";
 				PreparedStatement pst = connection.prepareStatement(queryString);
@@ -145,6 +158,56 @@ public class UserResource {
 			}
 		} catch (Exception e) {
 			responseList.add("Error: Failed to create user! - " + e.getMessage());
+			return gson.toJson(new DataRepository<>(400, responseList));
+		}
+		return gson.toJson(new DataRepository<>(200, responseList));
+	}
+	
+	@PUT
+	@Path("/v1/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	/*
+	 * Update user's name
+	 */
+	public String updateUser(@PathParam("id") int id, User user) {
+		List<String> responseList = new ArrayList<>();
+		try (Connection connection = new MysqlConnection().getConnection()) {
+			if (checkUserExist(connection, id)) {
+				String queryString = "UPDATE `public-api`.user SET name = ? WHERE id = ?;";
+				PreparedStatement pst = connection.prepareStatement(queryString);
+				pst.setString(1, user.getName());
+				pst.setInt(2, id);
+				Integer row = pst.executeUpdate();
+				responseList.add((row > 0) ? "Update user's name successfully!" : "Failed to update user's name!");
+			} else {
+				responseList.add("User doesn't exist!");
+			}
+		} catch (Exception e) {
+			responseList.add("Error: Failed to update user's name - " + e.getMessage());
+			return gson.toJson(new DataRepository<>(400, responseList));
+		}
+		return gson.toJson(new DataRepository<>(200, responseList));
+	}
+	
+	@DELETE
+	@Path("/v1")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public String deleteUser(User user) {
+		List<String> responseList = new ArrayList<>();
+		try (Connection connection = new MysqlConnection().getConnection()) {
+			if (checkUserExist(connection, user.getName())) {
+				String queryString = "DELETE FROM `public-api`.user WHERE name = ?;";
+				PreparedStatement pst = connection.prepareStatement(queryString);
+				pst.setString(1, user.getName());
+				Integer row = pst.executeUpdate();
+				responseList.add((row > 0) ? "Delete user successfully!" : "Failed to delete user!");
+			} else {
+				responseList.add("User doesn't exist!");
+			}
+		} catch (Exception e) {
+			responseList.add("Error: Failed to delete user - " + e.getMessage());
 			return gson.toJson(new DataRepository<>(400, responseList));
 		}
 		return gson.toJson(new DataRepository<>(200, responseList));
