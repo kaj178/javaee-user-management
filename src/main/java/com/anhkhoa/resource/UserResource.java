@@ -3,9 +3,8 @@ package com.anhkhoa.resource;
 import com.anhkhoa.database.MysqlConnection;
 import com.anhkhoa.model.User;
 import com.anhkhoa.repository.DataRepository;
-import com.anhkhoa.repository.UserRepository;
+import com.anhkhoa.repository.TempUserRepository;
 import com.google.gson.Gson;
-import com.mysql.cj.x.protobuf.MysqlxPrepare.Prepare;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -24,12 +23,11 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 
 @Path("/users")
 public class UserResource {
 	private Gson gson = new Gson();
-	private UserRepository userRepo = new UserRepository();
+	private TempUserRepository userRepo = new TempUserRepository();
 
 	@GET
 	@Path("/v0")
@@ -110,7 +108,7 @@ public class UserResource {
 			DataRepository<String> errorRepo = new DataRepository<>(404, errorList);
 			return gson.toJson(errorRepo);
 		}
-		DataRepository<User> dataRepo = new DataRepository<>(201, userList);
+		DataRepository<User> dataRepo = new DataRepository<>(200, userList);
  		return gson.toJson(dataRepo);
 	}
 	

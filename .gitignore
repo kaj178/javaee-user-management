@@ -1,0 +1,36 @@
+*.class
+
+# Package files #
+*.war
+*.ear
+META-INF/
+
+# Eclipse #
+.classpath
+.project
+.settings/
+/bin
+
+# IDEA #
+.idea/
+*.iml
+/out
+
+# Maven #
+dependency-reduced-pom.xml
+/target/
+*/target/**
+
+# logs #
+*.log
+logs/
+
+# FXGL #
+/saves
+profiles/
+system/
+
+# Project #
+*.bat
+
+

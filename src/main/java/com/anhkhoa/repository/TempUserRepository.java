@@ -5,10 +5,10 @@ import java.util.List;
 
 import com.anhkhoa.model.User;
 
-public class UserRepository {
+public class TempUserRepository {
 	List<User> userList;
 
-	public UserRepository() {
+	public TempUserRepository() {
 		userList = new ArrayList<>();
 
 		User user1 = new User(1, "Anh Khoa", "Male", "Active");
