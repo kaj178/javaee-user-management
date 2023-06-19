@@ -1,5 +1,0 @@
-com\anhkhoa\resource\UserResource.class
-com\anhkhoa\database\MysqlConnection.class
-com\anhkhoa\repository\DataRepository.class
-com\anhkhoa\model\User.class
-com\anhkhoa\repository\UserRepository.class
