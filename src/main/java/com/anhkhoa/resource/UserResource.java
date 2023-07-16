@@ -75,13 +75,13 @@ public class UserResource {
 		} catch (Exception e) {
 			errorList.add("Error: Read data fail! - " + e.getMessage());
 			DataRepository<String> errorRepo = new DataRepository<>(404, errorList);
-			return gson.toJson(errorRepo);
+			//return gson.toJson(errorRepo);
 		}
-		// Entity<List<User>> entity = Entity.json(userList);
-		// System.out.println(entity);
-		// return entity.getEntity();\
+//		 Entity<List<User>> entity = Entity.json(userList);
+//		 System.out.println(entity);
+//		 return entity.getEntity();
 		DataRepository<User> dataRepo = new DataRepository<>(200, userList);
-		return gson.toJson(dataRepo); 
+		return gson.toJson(dataRepo);
 	}
 	
 	@GET
