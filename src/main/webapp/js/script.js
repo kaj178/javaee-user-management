@@ -1,7 +1,7 @@
 $(document).ready(function () {
     $('[data-toggle="tooltip"]').tooltip()
 
-    let tableBody = document.querySelector("tbody")
+    let tableBody = document.querySelector("#user-data")
     // console.log(tableBody);
     fetch("http://localhost:8080/demorest/api/users/v1")
         .then(response => response.json())
