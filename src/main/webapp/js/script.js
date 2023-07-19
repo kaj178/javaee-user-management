@@ -17,8 +17,8 @@ $(document).ready(function () {
 					<td>${user.gender}</td>
 					<td>${user.status}</td>
 					 <td>
-						<a href="#" class="settings" title="Settings" data-toggle="tooltip"><i class="material-icons">&#xE8B8;</i></a>
-						<a href="#" class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE5C9;</i></a>
+						<a href="#editUserModal" class="settings" title="Settings" data-toggle="modal"><i class="material-icons" data-toggle="tooltip">&#xE8B8;</i></a>
+						<a href="#deleteUserModal" class="delete" title="Delete" data-toggle="modal"><i class="material-icons" data-toggle="tooltip">&#xE5C9;</i></a>
                      </td>
                 </tr>
 			`
