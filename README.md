@@ -1,1 +1,1 @@
-- User management client request jax-rs API
+- User management client request to jax-rs API
