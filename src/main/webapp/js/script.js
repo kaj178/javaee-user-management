@@ -1,6 +1,10 @@
 $(document).ready(function () {
     $('[data-toggle="tooltip"]').tooltip()
 
+    readUsers()
+})
+
+function readUsers() {
     let tableBody = document.querySelector("#user-data")
     // console.log(tableBody);
     fetch("http://localhost:8080/demorest/api/users/v1")
@@ -27,5 +31,33 @@ $(document).ready(function () {
             tableBody.innerHTML = tableInfo
         })
         .catch(error => console.log(error))
-})
+}
+
+function createUser() {
+     let userName = $('.add_employee #name_input').val()
+     let userGender =  $('.add_employee #gender_input').val()
+     let userStatus =  $('.add_employee #status_input').val()
+    // console.log(userName)
+    // console.log(userGender)
+    // console.log(userStatus)
+
+     $.ajax({
+         url: 'http://localhost:8080/demorest/api/users/v1',
+         method: 'POST',
+         contentType: 'application/json',
+         data: JSON.stringify({
+             name: userName,
+             gender: userGender,
+             status: userStatus
+         }),
+         success: (data) => {
+             //let response = JSON.parse(data)
+             console.log(data)
+             $('#addUserModal').modal('hide')
+             readUsers()
+             alert('Add user successfully!')
+         }
+     })
+}
+
 
