@@ -177,7 +177,7 @@ public class UserResource {
 				pst.setString(1, user.getName());
 				pst.setInt(2, id);
 				Integer row = pst.executeUpdate();
-				responseList.add((row > 0) ? "Update user's name successfully!" : "Failed to update user's name!");
+				responseList.add((row > 0) ? "Update user's name successfully!" : "Fail to update user's name!");
 			} else {
 				responseList.add("User doesn't exist!");
 			}
@@ -189,23 +189,23 @@ public class UserResource {
 	}
 	
 	@DELETE
-	@Path("/v1")
+	@Path("/v1/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	public String deleteUser(User user) {
+	// @Consumes(MediaType.APPLICATION_JSON)
+	public String deleteUser(@PathParam("id") int id) {
 		List<String> responseList = new ArrayList<>();
 		try (Connection connection = new MysqlConnection().getConnection()) {
-			if (checkUserExist(connection, user.getName())) {
-				String queryString = "DELETE FROM `public-api`.user WHERE name = ?;";
-				PreparedStatement pst = connection.prepareStatement(queryString);
-				pst.setString(1, user.getName());
-				Integer row = pst.executeUpdate();
-				responseList.add((row > 0) ? "Delete user successfully!" : "Failed to delete user!");
+			String queryString = "DELETE FROM `public-api`.user WHERE id = ?;";
+			PreparedStatement pst = connection.prepareStatement(queryString);
+			pst.setInt(1, id);
+ 			int rows = pst.executeUpdate();
+			if (rows > 0) {
+				responseList.add("Delete user successfully!");
 			} else {
-				responseList.add("User doesn't exist!");
+				responseList.add("Fail to delete user or user not found!");
 			}
 		} catch (Exception e) {
-			responseList.add("Error: Failed to delete user - " + e.getMessage());
+			responseList.add("Error: Fail to delete user - " + e.getMessage());
 			return gson.toJson(new DataRepository<>(400, responseList));
 		}
 		return gson.toJson(new DataRepository<>(200, responseList));

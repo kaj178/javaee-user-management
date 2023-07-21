@@ -1,16 +1,21 @@
 $(document).ready(function () {
     $('[data-toggle="tooltip"]').tooltip()
+
     $(document).on('click', '#edit-btn', (e) => {
-        console.log("Hello")
+        // console.log("Hello")
         let userID = $(e.currentTarget).attr('data-id') // .data('id')
         console.log(userID)
         $('#edit-modal').attr('data-id', userID) // Add id to data-id value of button in modal
     })
+    $(document).on('click', '#delete-btn', (e) => {
+        let userID = $(e.currentTarget).attr('data-id')
+        $('#delete-modal').attr('data-id', userID)
+    })
 
     readUsers()
-    document.querySelector('#edit-modal').addEventListener('click', updateUser)
-    document.querySelector('#add-modal').addEventListener('click', createUser)
-    document.querySelector('#edit-modal').addEventListener('click', updateUser)
+    $('#add-modal').on('click', createUser)
+    $('#edit-modal').on('click', updateUser)
+    $('#delete-modal').on('click', deleteUser)
 
     function readUsers() {
         let tableBody = document.querySelector("#user-data")
@@ -30,7 +35,7 @@ $(document).ready(function () {
 					<td>${user.status}</td>
 					 <td>
 						<a href="#editUserModal" class="settings" title="Settings" data-toggle="modal"><i id="edit-btn" class="material-icons" data-id="${user.id}" data-toggle="tooltip">&#xE8B8;</i></a>
-						<a href="#deleteUserModal" class="delete" title="Delete" data-toggle="modal"><i id="delete-btn"  class="material-icons" data-id="${user.id}" data-toggle="tooltip">&#xE5C9;</i></a>
+						<a href="#deleteUserModal" class="delete" title="Delete" data-toggle="modal"><i id="delete-btn" class="material-icons" data-id="${user.id}" data-toggle="tooltip">&#xE5C9;</i></a>
                      </td>
                 </tr>
 			`
@@ -60,7 +65,7 @@ $(document).ready(function () {
             }),
             success: (data) => {
                 //let response = JSON.parse(data)
-                console.log(data)
+                // console.log(data)
                 $('#addUserModal').modal('hide')
                 readUsers()
                 alert('Add user successfully!')
@@ -93,6 +98,25 @@ $(document).ready(function () {
                 $('#editUserModal').modal('hide')
                 readUsers()
                 alert('Edit user successfully!')
+            }
+        })
+    }
+
+    function deleteUser() {
+        let userID = $('#delete-modal').attr('data-id')
+        // console.log(userID)
+
+        $.ajax({
+            url: 'http://localhost:8080/demorest/api/users/v1/' + userID,
+            method: 'DELETE',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                id: userID
+            }),
+            success: () => {
+                $('#delete-modal').hide()
+                readUsers()
+                alert('Delete user successfully!')
             }
         })
     }
