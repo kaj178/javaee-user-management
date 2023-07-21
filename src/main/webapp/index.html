@@ -68,7 +68,7 @@
                         </div>
                         <div class="modal-footer">
                             <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
-                            <input type="submit" class="btn btn-success" value="Add" onclick="createUser()">
+                            <input type="submit" id="add-modal" class="btn btn-success" value="Add"> <!--onclick="createUser()"-->
                         </div>
                     </div>
                 </div>
@@ -76,6 +76,7 @@
 
             <!-- Edit -->
             <div id="editUserModal" class="modal fade">
+                <span id="modalDataId"></span>
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -98,7 +99,7 @@
                         </div>
                         <div class="modal-footer">
                             <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
-                            <input type="submit" class="btn btn-success" value="Add" onclick="updateUser()">
+                            <input type="submit" id="edit-modal" class="btn btn-success" data-id="" value="Submit"> <!--onclick="updateUser()"-->
                         </div>
                     </div>
                 </div>
@@ -119,13 +120,13 @@
                         <input type="hidden" id="delete_id">
                         <div class="modal-footer">
                             <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
-                            <input type="submit" class="btn btn-danger" onclick="deleteUser()" value="Delete">
+                            <input type="submit" id="delete-modal" class="btn btn-danger" value="Delete"> <!--onclick="deleteUser()"-->
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>     
+</div>
 </body>
 </html>
