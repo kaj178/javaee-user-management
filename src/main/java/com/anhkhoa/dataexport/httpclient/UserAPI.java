@@ -1,13 +1,17 @@
 package com.anhkhoa.dataexport.httpclient;
 
+import com.anhkhoa.model.User;
+import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
 
 public class UserAPI {
-    public String getMethod(String link) throws IOException, InterruptedException {
+    public List<User> getMethod(String link) throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(link))
@@ -15,7 +19,12 @@ public class UserAPI {
                 .method("GET", HttpRequest.BodyPublishers.noBody())
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        return response.body();
+        return convertToJsonObject(response.body()).getData();
+
+    }
+
+    private UserListResponse convertToJsonObject(String json) {
+        return new Gson().fromJson(json, UserListResponse.class);
     }
 
 //    public static void main(String[] args) {
