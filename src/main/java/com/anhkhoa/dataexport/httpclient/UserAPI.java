@@ -20,7 +20,6 @@ public class UserAPI {
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         return convertToJsonObject(response.body()).getData();
-
     }
 
     private UserListResponse convertToJsonObject(String json) {
