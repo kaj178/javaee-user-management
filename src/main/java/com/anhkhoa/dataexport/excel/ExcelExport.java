@@ -76,12 +76,11 @@ public class ExcelExport {
         return new UserAPI().getMethod(endPoint);
     }
 
-    public static void main(String[] args) {
-        try {
-            ExcelExport exporter = new ExcelExport();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
+//    public static void main(String[] args) {
+//        try {
+//            ExcelExport exporter = new ExcelExport();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 }
