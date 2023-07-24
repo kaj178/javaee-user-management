@@ -1,11 +1,13 @@
 package com.anhkhoa.resource;
 
 import com.anhkhoa.database.MysqlConnection;
+import com.anhkhoa.dataexport.excel.ExcelExport;
 import com.anhkhoa.model.User;
 import com.anhkhoa.repository.DataRepository;
 import com.anhkhoa.repository.TempUserRepository;
 import com.google.gson.Gson;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 import java.sql.Connection;
@@ -23,6 +25,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @Path("/users")
 public class UserResource {
@@ -209,5 +212,20 @@ public class UserResource {
 			return gson.toJson(new DataRepository<>(400, responseList));
 		}
 		return gson.toJson(new DataRepository<>(200, responseList));
+	}
+
+	@GET
+	@Path("/v1/export")
+	@Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	public Response getExcel() {
+		try {
+			ExcelExport excelExport = new ExcelExport();
+			return Response.ok(excelExport.getSavePath())
+					.header("Content-Disposition", "attachment; filename=user.xlsx")
+					.build();
+		} catch (IOException | InterruptedException e) {
+			e.printStackTrace();
+			return Response.serverError().build();
+		}
 	}
 }

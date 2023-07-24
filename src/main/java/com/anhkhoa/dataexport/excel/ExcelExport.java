@@ -23,6 +23,7 @@ public class ExcelExport {
 
     public ExcelExport() throws IOException, InterruptedException {
         this.userList = getUserAPI();
+        // Set default folder for downloading file
         defaultDownloadFolder = System.getProperty("user.home") + "\\Downloads\\";
         savePath = defaultDownloadFolder + "user.xlsx";
         writeExcel(userList, savePath);
@@ -74,6 +75,10 @@ public class ExcelExport {
     private static List<User> getUserAPI() throws IOException, InterruptedException {
         String endPoint = "http://localhost:8080/demorest/api/users/v1";
         return new UserAPI().getMethod(endPoint);
+    }
+
+    public String getSavePath() {
+        return this.savePath;
     }
 
 //    public static void main(String[] args) {
