@@ -221,7 +221,7 @@ public class UserResource {
 		try {
 			ExcelExport excelExport = new ExcelExport();
 			return Response.ok(excelExport.getSavePath())
-					.header("Content-Disposition", "attachment; filename=user.xlsx")
+					// .header("Content-Disposition", "attachment; filename=user.xlsx")
 					.build();
 		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
